@@ -20,6 +20,7 @@ ENV PORT=3000
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+RUN addgroup -S app && adduser -S -u 10001 -G app app && chown -R app:app /app
 EXPOSE 3000
-USER 10001
+USER app
 CMD ["node", "server.js"]
