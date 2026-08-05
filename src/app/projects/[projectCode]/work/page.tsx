@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Sparkles, Check, Plus, Trash2 } from "lucide-react";
+import "./planner.css";
 
 type Task = { stage: string; title: string; description: string; priority: string; estimatedDays: number; dependsOn: string };
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export default function WorkPlannerPage({ params }: { params: { projectCode: string } }) {
   const [requirements, setRequirements] = useState("Kitchen, two bathrooms, electrical, painting and flooring");
@@ -14,13 +16,13 @@ export default function WorkPlannerPage({ params }: { params: { projectCode: str
   async function generate() {
     setLoading(true); setMessage("");
     try {
-      const res = await fetch("/api/ai/work-plans/draft", {
+      const res = await fetch(`${API_BASE}/api/ai/work-plans/draft`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectCode: params.projectCode, projectTitle: "Renevo Project", propertyType: "", requirements, scope: requirements })
       });
       if (!res.ok) throw new Error("Unable to generate draft");
       const data = await res.json(); setTasks(data.tasks ?? []);
-    } catch { setMessage("AI draft is not connected yet. Backend API is ready for integration."); }
+    } catch { setMessage("AI draft is not connected yet. Check the backend URL and CORS configuration."); }
     finally { setLoading(false); }
   }
 
